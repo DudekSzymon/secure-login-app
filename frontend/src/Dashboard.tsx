@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { authAPI, User } from "./api";
+import "./Dashboard.css"; // IMPORT SPECJALNYCH STYLI
 import {
   ShieldCheck,
   User as UserIcon,
@@ -9,6 +10,7 @@ import {
   Clock,
   Lock,
   Mail,
+  Cpu,
 } from "lucide-react";
 
 interface DashboardProps {
@@ -18,7 +20,6 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     loadUser();
@@ -29,8 +30,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       const data = await authAPI.getCurrentUser();
       setUser(data.user);
     } catch (error) {
-      setError("Failed to fetch security credentials");
-      console.error(error);
+      console.error("Failed to load session", error);
     } finally {
       setLoading(false);
     }
@@ -47,103 +47,119 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
 
   if (loading) {
     return (
-      <div className="dashboard-loading">
-        <div className="spinner"></div>
-        <p>Verifying session security...</p>
+      <div
+        className="soc-dashboard-wrapper"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <Cpu className="soc-pulse" size={48} color="#2563eb" />
+          <p style={{ marginTop: "20px", letterSpacing: "2px" }}>
+            INITIALIZING SECURE TERMINAL...
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="dashboard-container">
-      {/* HEADER PANELU */}
-      <header className="db-header">
-        <div className="db-title-group">
+    <div className="soc-dashboard-wrapper">
+      <header className="soc-header">
+        <div className="soc-title-group">
           <h1>Security Operations Center</h1>
-          <p className="db-subtitle">Terminal Session: Active</p>
+          <div className="soc-status-line">
+            <span className="soc-blink"></span>
+            <span>
+              SYSTEM STATUS: ACTIVE // OPERATOR:{" "}
+              {user?.email.split("@")[0].toUpperCase()}
+            </span>
+          </div>
         </div>
-        <button onClick={handleLogout} className="logout-btn-premium">
+        <button onClick={handleLogout} className="soc-terminate-btn">
           <LogOut size={18} />
-          <span>Terminate Session</span>
+          <span>TERMINATE SESSION</span>
         </button>
       </header>
 
-      {/* STATYSTYKI SZYBKIEGO PODGLĄDU */}
-      <div className="stats-grid">
-        <div className="stat-card highlight">
-          <ShieldCheck className="stat-icon-blue" />
-          <div className="stat-info">
-            <span className="stat-label">System Status</span>
-            <span className="stat-value">PROTECTED</span>
+      <div className="soc-stats-grid">
+        <div className="soc-stat-card active">
+          <ShieldCheck className="soc-stat-icon" />
+          <div>
+            <span className="soc-stat-label">Protection Status</span>
+            <span className="soc-stat-value">SHIELD ACTIVE</span>
           </div>
         </div>
-        <div className="stat-card">
-          <Activity className="stat-icon" />
-          <div className="stat-info">
-            <span className="stat-label">Threat Level</span>
-            <span className="stat-value text-low">LOW</span>
+        <div className="soc-stat-card">
+          <Activity className="soc-stat-icon green" />
+          <div>
+            <span className="soc-stat-label">Integrity Level</span>
+            <span className="soc-stat-value">100% SECURE</span>
           </div>
         </div>
-        <div className="stat-card">
-          <Lock className="stat-icon" />
-          <div className="stat-info">
-            <span className="stat-label">Encryption</span>
-            <span className="stat-value">AES-256</span>
+        <div className="soc-stat-card">
+          <Lock className="soc-stat-icon" />
+          <div>
+            <span className="soc-stat-label">Encryption Standard</span>
+            <span className="soc-stat-value">AES-256-GCM</span>
           </div>
         </div>
       </div>
 
-      <div className="db-main-grid">
-        {/* PROFIL UŻYTKOWNIKA */}
-        <section className="db-card user-profile">
-          <div className="card-header">
-            <UserIcon size={20} />
-            <h3>Operator Profile</h3>
+      <div className="soc-main-grid">
+        <section className="soc-card">
+          <div className="soc-card-header">
+            <UserIcon size={20} color="#2563eb" />
+            <h3>Operator Credentials</h3>
           </div>
           {user && (
-            <div className="card-body">
-              <div className="info-item">
-                <Mail size={16} />
+            <div className="soc-card-body">
+              <div className="soc-info-item">
+                <Mail size={16} color="#71717a" />
                 <div>
-                  <label>Identified Email</label>
-                  <span>{user.email}</span>
+                  <label className="soc-info-label">Corporate Email</label>
+                  <span className="soc-info-value">{user.email}</span>
                 </div>
               </div>
-              <div className="info-item">
-                <Key size={16} />
+              <div className="soc-info-item">
+                <Key size={16} color="#71717a" />
                 <div>
-                  <label>Access UID</label>
-                  <span className="mono-text">{user.id}</span>
+                  <label className="soc-info-label">Access ID (UID)</label>
+                  <span className="soc-info-value soc-mono">{user.id}</span>
                 </div>
               </div>
-              <div className="info-item">
-                <Clock size={16} />
+              <div className="soc-info-item">
+                <Clock size={16} color="#71717a" />
                 <div>
-                  <label>Deployment Date</label>
-                  <span>{new Date(user.createdAt).toLocaleDateString()}</span>
+                  <label className="soc-info-label">Session Established</label>
+                  <span className="soc-info-value">
+                    {new Date(user.createdAt).toLocaleString()}
+                  </span>
                 </div>
               </div>
             </div>
           )}
         </section>
 
-        {/* LOGI BEZPIECZEŃSTWA */}
-        <section className="db-card security-stack">
-          <div className="card-header">
-            <ShieldCheck size={20} />
+        <section className="soc-card">
+          <div className="soc-card-header">
+            <ShieldCheck size={20} color="#2563eb" />
             <h3>Active Security Protocols</h3>
           </div>
-          <div className="protocol-list">
+          <div className="soc-protocol-list">
             {[
-              "Bcrypt-Password-Hashing (12 rounds)",
-              "JWT-Auto-Refresh (15 min)",
-              "Rate-Limiting Protection",
-              "HTTP-Only Secure Cookies",
-              "SQL/NoSQL Injection Shield",
-              "Helmet Security Headers",
+              "Bcrypt-Password-Hashing (v12)",
+              "JWT-Auto-Refresh mechanism",
+              "Advanced Rate-Limiting Protection",
+              "HTTP-Only Cookie Injection Prevention",
+              "SQL/NoSQL Shield Enabled",
+              "Helmet.js Security Headers Active",
+              "Strict Cross-Origin Resource Sharing",
             ].map((feature, idx) => (
-              <div key={idx} className="protocol-item">
-                <span className="status-dot"></span>
+              <div key={idx} className="soc-protocol-item">
+                <div className="soc-dot"></div>
                 {feature}
               </div>
             ))}

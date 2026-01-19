@@ -29,21 +29,30 @@ function App() {
     setCurrentView("login");
   };
 
+  // Jeśli zalogowany - renderuj TYLKO Dashboard na pełnym ekranie
+  if (isAuthenticated) {
+    return (
+      <div className="app-container dashboard-mode">
+        <div className="fade-in full-width">
+          <Dashboard onLogout={handleLogout} />
+        </div>
+      </div>
+    );
+  }
+
+  // Jeśli NIE zalogowany - renderuj stary układ (Logowanie/Rejestracja)
   return (
-    <div className={`app-container ${isAuthenticated ? "dashboard-mode" : ""}`}>
-      {/* LEWA STRONA: Formularze */}
+    <div className="app-container">
       <div className="form-side">
         <div className="form-content">
-          {!isAuthenticated && (
-            <header className="logo-header">
-              <div className="logo-placeholder">
-                <span className="logo-icon">🛡️</span> SECURE
-              </div>
-            </header>
-          )}
+          <header className="logo-header">
+            <div className="logo-placeholder">
+              <span className="logo-icon">🛡️</span> SECURE
+            </div>
+          </header>
 
           <main className="auth-wrapper">
-            {!isAuthenticated && currentView === "login" && (
+            {currentView === "login" ? (
               <div className="fade-in">
                 <h1 className="auth-title">Sign In</h1>
                 <Login
@@ -51,9 +60,7 @@ function App() {
                   onSwitchToRegister={() => setCurrentView("register")}
                 />
               </div>
-            )}
-
-            {!isAuthenticated && currentView === "register" && (
+            ) : (
               <div className="fade-in">
                 <h1 className="auth-title">Sign Up</h1>
                 <Register
@@ -62,30 +69,21 @@ function App() {
                 />
               </div>
             )}
-
-            {isAuthenticated && (
-              <div className="fade-in dashboard-view">
-                <Dashboard onLogout={handleLogout} />
-              </div>
-            )}
           </main>
         </div>
       </div>
 
-      {/* PRAWA STRONA: Visual Content (Znika po zalogowaniu) */}
-      {!isAuthenticated && (
-        <div className="visual-side">
-          <div className="visual-content">
-            <h2>
-              Your data, under full control. <br />
-              Secure your application with us.
-            </h2>
-            <a href="#security" className="learn-more-link">
-              READ SECURITY WHITE-PAPER
-            </a>
-          </div>
+      <div className="visual-side">
+        <div className="visual-content">
+          <h2>
+            Your data, under full control. <br />
+            Secure your application with us.
+          </h2>
+          <a href="#security" className="learn-more-link">
+            READ SECURITY WHITE-PAPER
+          </a>
         </div>
-      )}
+      </div>
     </div>
   );
 }
