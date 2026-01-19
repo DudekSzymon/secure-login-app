@@ -227,3 +227,20 @@ body {
 .error-list li {
   margin-bottom: 2px;
 }
+
+/* Stylizacja logo na czarno-białe */
+.logo-placeholder {
+  /* To jest kluczowa linia, która zmienia kolory na skalę szarości */
+  filter: grayscale(100%);
+
+  /* Dodatkowe style dla lepszego ułożenia i wyglądu */
+  display: flex;
+  align-items: center; /* Wyśrodkowuje ikonę i tekst w pionie */
+  font-weight: bold;
+  font-size: 24px; /* Przykładowy rozmiar */
+}
+
+.logo-icon {
+  margin-right: 10px;
+  font-size: 28px;
+}
